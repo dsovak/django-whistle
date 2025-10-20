@@ -1,9 +1,13 @@
-from django.contrib.auth import get_user_model
 from django.db import migrations
 
 
+def get_user_model(apps):
+    app_label, model_name = settings.AUTH_USER_MODEL.split('.')
+    return apps.get_model(app_label, model_name)
+
+
 def wrap(apps, schema_editor):
-    for user in get_user_model().objects.exclude(notification_settings=None):
+    for user in get_user_model(apps).objects.exclude(notification_settings=None):
         user.notification_settings = {
             'events': user.notification_settings
         }
@@ -11,7 +15,7 @@ def wrap(apps, schema_editor):
 
 
 def unwrap(apps, schema_editor):
-    for user in get_user_model().objects.exclude(notification_settings=None):
+    for user in get_user_model(apps).objects.exclude(notification_settings=None):
         user.notification_settings = user.notification_settings.get('events', {})
         user.save(update_fields=['notification_settings'])
 
