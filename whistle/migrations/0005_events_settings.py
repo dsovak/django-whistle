@@ -1,4 +1,5 @@
 from django.db import migrations
+from django.conf import settings
 
 
 def get_user_model(apps):
